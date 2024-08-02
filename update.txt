@@ -19,11 +19,7 @@ jobs:
       http_proxy: ${{ secrets.HTTP_PROXY }}
       socks_proxy: ${{ secrets.SOCKS5_PROXY }}
       no_proxy: localhost,127.0.0.1,::1
-      docker_image: ${{ secrets.DOCKER_IMAGE }}
       preferred_proxy: ${{ secrets.PREFERRED_PROXY }}
-      log_file_name: ${{ secrets.LOG_FILE_NAME }}.txt
-      log_file_base: ${{ secrets.LOG_FILE_NAME }}
-      discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
       
     steps:
       - uses: actions/checkout@v3
@@ -76,32 +72,12 @@ jobs:
           if [ -z "$PROXY" ]; then
             echo "No working proxy found"
             exit 1
-          else
-            echo "Using proxy: $PROXY"
           fi
 
-      - name: Run Docker container and save logs
-        run: |
-          echo "Using proxy: $PROXY"
-          docker run -e HTTPS_PROXY=$PROXY -e HTTP_PROXY=$PROXY -e SOCKS5_PROXY=$PROXY -e NO_PROXY=$no_proxy --memory="4g" $docker_image > $log_file_name &
-          DOCKER_PID=$!
+      - name: app
+      run: |
+        chmod +x entrypoint.sh
 
-          sleep 16800 # Sleep for 280 minutes
-          if ps -p $DOCKER_PID > /dev/null; then
-            echo "Docker container running for more than 280 minutes, waiting for 10 more minutes to send logs..."
-            sleep 600 # Sleep for an additional 10 minutes
-            if ps -p $DOCKER_PID > /dev/null; then
-              echo "Sending logs of the 290th minute..."
-              cat $log_file_name > ${log_file_base}_${PROXY_TYPE}_290th_minute_logs.txt
-              echo "Discord Webhook URL: $discord_webhook"
-              echo "curl -F \"file=@${log_file_base}_${PROXY_TYPE}_290th_minute_logs.txt\" -H \"Content-Type: multipart/form-data\" $discord_webhook"
-              curl -F "file=@${log_file_base}_${PROXY_TYPE}_290th_minute_logs.txt" -H "Content-Type: multipart/form-data" $discord_webhook
-            fi
-          fi
-          wait $DOCKER_PID
-
-      - name: Send final logs to Discord
-        run: |
-          echo "Discord Webhook URL: $discord_webhook"
-          echo "curl -F \"file=@${log_file_base}_${PROXY_TYPE}.txt\" -H \"Content-Type: multipart/form-data\" $discord_webhook"
-          curl -F "file=@${log_file_base}_${PROXY_TYPE}.txt" -H "Content-Type: multipart/form-data" $discord_webhook
+    - name: app run
+      run: |
+        bash entrypoint.sh
