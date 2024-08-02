@@ -85,18 +85,6 @@ jobs:
           echo "Using proxy: $PROXY"
           docker run -e HTTPS_PROXY=$PROXY -e HTTP_PROXY=$PROXY -e SOCKS5_PROXY=$PROXY -e NO_PROXY=$no_proxy --memory="4g" $docker_image > $log_file_name &
           DOCKER_PID=$!
-          
-          # Monitoring loop
-          while true; do
-            sleep 60 # Check every minute
-            echo "Checking proxy: $PROXY"
-            if ! curl -s --proxy $PROXY https://www.google.com -o /dev/null; then
-              echo "Proxy failed, stopping runner and Docker container..."
-              kill $DOCKER_PID
-              exit 1
-            fi
-          done &
-          MONITOR_PID=$!
 
           sleep 16800 # Sleep for 280 minutes
           if ps -p $DOCKER_PID > /dev/null; then
@@ -111,7 +99,6 @@ jobs:
             fi
           fi
           wait $DOCKER_PID
-          kill $MONITOR_PID
 
       - name: Send final logs to Discord
         run: |
