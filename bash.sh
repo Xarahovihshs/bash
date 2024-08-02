@@ -1,12 +1,12 @@
-git clone https://rameshkumar015@bitbucket.org/bauw61625c28du3v25wrc28wh2g26wve/0001-of-one.git
+git clone https://github.com/a3ro-dev/0001-of-one.git
 
 sleep 5
 
-git clone https://github.com/koaojwt6wbfsu619/commonrqdtdcji993xci9bitA
+git clone https://github.com/sudarshan-koirala/commonrqdtdcji993xci9bitA
 
 sleep 5
 
-git clone https://anandranga038@bitbucket.org/iaiwuwuwi19w62y2h8w62y26wgi18/kfcvarteacobita.git
+git clone https://github.com/ThiaudioTT/kfcvarteacobita.git
 
 sleep 5
 
